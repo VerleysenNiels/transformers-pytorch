@@ -11,7 +11,9 @@ Transformers have an encoder-decoder architecture. The encoder is built up from 
 The encoder block mainly consists of two layers: a multi-head attention layer and a feedforward layer. The outputs of these layers are added with the input of the layer through a skip connection and are normalized. So this is quite simple, once we understand the multi-head attention.
 
 ### Multi-Head Attention
-TODO
+From a high level, attention performs a mapping of a query and a set of key-value pairs to an output. It figures out for each token (identified by a key) what other tokens are related to it and how important they are in that regard (values). Keys, values and queries are all packed in vectors and passed together to perform computations in parallel. Each of these vectors first pass through a linear layer before performing scaled dot-product attention. In scaled dot-product attention the keys and queries are first multiplied, then scaled, optionally masked and passed through a softmax activation function. This output is then multiplied with the values. This is a single head, so we stack multiple of these together (giving us multi-head attention).
+
+The outputs coming from all these heads are concatenated together before being passed through a final linear layer. This gives us the output of the multi-head attention layer (or block depending on how you see it).
 
 ![image](https://user-images.githubusercontent.com/26146888/209950910-a37be4f9-6774-4c0a-9dbd-c012817bd82a.png)
 
@@ -19,7 +21,7 @@ TODO
 If we look closely at the architecture of the decoder block, we can see that it is almost completely the same as the encoder block. The main difference being the inputs to the multi-head attention layer. The keys and values are coming from the output of the encoder block. While the query comes from a masked multi-head attention layer, also with a skip connection.
 
 ### Masked Multi-Head Attention
-TODO
+This is the same as multi-head attention, with the addition of a mask. Why do we need a mask here? Well, the transformer can do all computations in parallel while training. The decoder gets the outputs as input and this way we get leakage as future target tokens are given as input. The model can then learn to simply use these instead of predicting anything by itself. To prevent this we have to mask the output embeddings so future target tokens cannot be used. 
 
 ## Environment requirements
 TODO
