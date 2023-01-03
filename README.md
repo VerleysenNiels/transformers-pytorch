@@ -24,7 +24,7 @@ If we look closely at the architecture of the decoder block, we can see that it 
 This is the same as multi-head attention, with the addition of a mask. Why do we need a mask here? Well, the transformer can do all computations in parallel while training. The decoder gets the outputs as input and this way we get leakage as future target tokens are given as input. The model can then learn to simply use these instead of predicting anything by itself. To prevent this we have to mask the output embeddings so future target tokens cannot be used. 
 
 ## Environment requirements
-TODO
+You can find the environment I'm using for this project in the environment.yml file. You can use this file with conda to recreate this exact environment, just make sure to update the environment prefix. The environment is based on python 3.10 (as 3.11 is not available in conda yet). In terms of libraries I'm currently only using pytorch with CUDA (11.7) and standard libraries like numpy. So an alternative option could be to recreate this environment yourself with python 3.10 and installing a version of pytorch that works on your system.
 
 ## Usage
 TODO
