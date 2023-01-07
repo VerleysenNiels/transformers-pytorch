@@ -150,7 +150,7 @@ if __name__ == "__main__":
 
     # Evaluation loop
     with torch.no_grad():
-        logits = model(source, target).to("cpu")
+        logits = model(source, target)
         preds = logits.argmax(dim=-1)
         accuracy = (preds == target).float().mean()
         logging.info(f'Accuracy: {accuracy}')
