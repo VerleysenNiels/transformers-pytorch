@@ -7,7 +7,7 @@ This is the implementation of the decoder. (this is very similar to the encoder)
 import torch
 import torch.nn as nn
 
-from decoder_block import DecoderBlock
+from .decoder_block import DecoderBlock
 
 class Decoder(nn.Module):
     def __init__(self, nr_blocks, embedding_size, nr_heads, forward_expansion, dropout, nr_tokens, max_seq_length, device):

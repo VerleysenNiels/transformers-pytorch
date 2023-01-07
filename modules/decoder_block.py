@@ -7,8 +7,8 @@ This is the implementation of this block.
 import torch
 import torch.nn as nn
 
-from transformer_block import TransformerBlock
-from multi_head_attention import MultiHeadAttention
+from .transformer_block import TransformerBlock
+from .multi_head_attention import MultiHeadAttention
 
 class DecoderBlock(nn.Module):
     def __init__(self, embedding_size, nr_heads, dropout, forward_expansion):

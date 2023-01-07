@@ -11,7 +11,7 @@ A single transformer block exists of:
 import torch
 import torch.nn as nn
 
-from multi_head_attention import MultiHeadAttention
+from .multi_head_attention import MultiHeadAttention
 
 class TransformerBlock(nn.Module):
     def __init__(self, embedding_size, nr_heads, dropout, forward_expansion):

@@ -7,7 +7,7 @@ The output of the previous block is used as keys, values and queries for the nex
 import torch
 import torch.nn as nn
 
-from transformer_block import TransformerBlock
+from .transformer_block import TransformerBlock
 
 class Encoder(nn.Module):
     def __init__(self, nr_blocks, embedding_size, nr_heads, forward_expansion, dropout, nr_tokens, max_seq_length, device):
