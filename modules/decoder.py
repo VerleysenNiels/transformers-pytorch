@@ -54,5 +54,5 @@ class Decoder(nn.Module):
         
         # After the decoder blocks we have the head of the model, which in the published research is a single linear layer with softmax activation    
         out = self.feed_forward_out(out)
-        out = torch.softmax(out)
+        out = torch.softmax(out, dim=2)
         return out
