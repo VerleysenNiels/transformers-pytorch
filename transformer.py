@@ -42,38 +42,44 @@ class Transformer(nn.Module):
         
     def create_source_mask(self, source):
         """
-        Create the mask for the source language.
+        Create the mask for samples from the source language.
         
         Parameters:
-            source (torch.Tensor): Tensor of shape (batch_size, source_seq_length) representing the source language.
+            source (torch.Tensor): Tensor of shape (batch_size, source_seq_length) representing examples from  the source language.
         
         Returns:
             torch.Tensor: Tensor of shape (batch_size, 1, 1, source_seq_length) representing the mask.
         """
-        source_mask = (source != self.source_padding_index).unsqueeze(1).unsqueeze(2) # (batch-size, 1, 1, source-length)
+        source_mask = (source != self.source_padding_index).unsqueeze(1).unsqueeze(2)
         return source_mask.to(self.device)
     
     def create_target_mask(self, target):
         """
-        Create the mask for the target language.
+        Create the mask for samples from the target language.
         
         Parameters:
-            target (torch.Tensor): Tensor of shape (batch_size, target_seq_length) representing the target language.
+            target (torch.Tensor): Tensor of shape (batch_size, target_seq_length) representing examples from the target language.
         
         Returns:
             torch.Tensor: Tensor of shape (batch_size, target_seq_length, target_seq_length) representing the mask.
         """
         batch_size, target_length = target.shape
-        target_mask = torch.tril(torch.ones((target_length, target_length))).expand(batch_size, 1, target_length, target_length)
-        return target_mask.to(self.device)
+        # We need to mask out padding in the target samples
+        padding_mask = (target != self.target_padding_index).unsqueeze(1).unsqueeze(2).to(self.device)
+        # We need to mask out future output tokens in order to prevent leaking.
+        target_mask = torch.tril(torch.ones((target_length, target_length))).expand(batch_size, 1, target_length, target_length).to(self.device)
+        # Combine the two masks
+        target_mask = torch.minimum(padding_mask, target_mask)
+        
+        return target_mask
     
     def forward(self, source, target):
         """
         Forward pass through the transformer.
         
         Parameters:
-            source (torch.Tensor): Tensor of shape (batch_size, source_seq_length) representing the source language.
-            target (torch.Tensor): Tensor of shape (batch_size, target_seq_length) representing the target language.
+            source (torch.Tensor): Tensor of shape (batch_size, source_seq_length) representing examples from the source language.
+            target (torch.Tensor): Tensor of shape (batch_size, target_seq_length) representing examples from the target language.
         
         Returns:
             torch.Tensor: Tensor of shape (batch_size, target_seq_length, target_vocab_size) representing the output logits.
