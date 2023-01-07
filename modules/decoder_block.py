@@ -11,7 +11,7 @@ from transformer_block import TransformerBlock
 from multi_head_attention import MultiHeadAttention
 
 class DecoderBlock(nn.Module):
-    def __init__(self, embedding_size, nr_heads, dropout, forward_expansion, device):
+    def __init__(self, embedding_size, nr_heads, dropout, forward_expansion):
         super(DecoderBlock, self).__init__()
         
         self.attention = MultiHeadAttention(embedding_size, nr_heads)

@@ -48,3 +48,5 @@ class Encoder(nn.Module):
         # Finally we have a number of transformer blocks
         for transformer_block in self.transformer_blocks:
             out = transformer_block(out, out, out, mask)
+            
+        return out
