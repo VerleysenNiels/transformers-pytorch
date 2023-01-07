@@ -4,6 +4,8 @@ I have built up the encoder and decoder classes in the modules folder.
 """
 
 # Imports
+import logging
+
 import torch
 import torch.nn as nn
 
@@ -97,11 +99,17 @@ if __name__ == "__main__":
     
     Here I create a dummy dataset with a vocabulary size of 10 (numbers 0-9). Then train the model on it for 5 epochs and test it on the same data again just to see if it works.
     Please don't test on training data in actual projects ;)
-    """    
+    """
+    # Set logging level to info
+    logging.basicConfig(level=logging.INFO)
+    
+    # Check if cuda is available as device    
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    logging.info(f"Running on {device}")    
     
     # Dummy input data
-    source = torch.tensor([[1, 2, 3, 4, 5], [1, 2, 3, 0, 0], [1, 2, 0, 0, 0], [2, 3, 4, 5, 6]])
-    target = torch.tensor([[1, 2, 3, 4, 5], [1, 2, 3, 4, 0], [1, 2, 3, 4, 5], [1, 2, 3, 4, 5]])
+    source = torch.tensor([[1, 2, 3, 4, 5], [1, 2, 3, 0, 0], [1, 2, 0, 0, 0], [2, 3, 4, 5, 6]]).to(device)
+    target = torch.tensor([[1, 2, 3, 4, 5], [1, 2, 3, 4, 0], [1, 2, 3, 4, 5], [1, 2, 3, 4, 5]]).to(device)
 
     # Dummy input sizes
     source_vocabulary_size = 10
@@ -112,7 +120,7 @@ if __name__ == "__main__":
     target_padding_index = 0
 
     # Initialize transformer model
-    model = Transformer(source_vocabulary_size, target_vocabulary_size, source_padding_index, target_padding_index)
+    model = Transformer(source_vocabulary_size, target_vocabulary_size, source_padding_index, target_padding_index, device=device).to(device)
 
     # Set model to training mode
     model.train()
@@ -135,14 +143,14 @@ if __name__ == "__main__":
         optimizer.zero_grad()
         
         # Print loss at each epoch
-        print(f'Epoch {epoch+1}: Loss = {loss.item()}')
+        logging.info(f'Epoch {epoch+1}: Loss = {loss.item()}')
 
     # Set model to eval mode
     model.eval()
 
     # Evaluation loop
     with torch.no_grad():
-        logits = model(source, target)
+        logits = model(source, target).to("cpu")
         preds = logits.argmax(dim=-1)
         accuracy = (preds == target).float().mean()
-        print(f'Accuracy: {accuracy}')
+        logging.info(f'Accuracy: {accuracy}')
