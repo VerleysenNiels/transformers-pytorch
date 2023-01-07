@@ -27,7 +27,62 @@ This is the same as multi-head attention, with the addition of a mask. Why do we
 You can find the environment I'm using for this project in the environment.yml file. You can use this file with conda to recreate this exact environment, just make sure to update the environment prefix. The environment is based on python 3.10 (as 3.11 is not available in conda yet). In terms of libraries I'm currently only using pytorch with CUDA (11.7) and standard libraries like numpy. So an alternative option could be to recreate this environment yourself with python 3.10 and installing a version of pytorch that works on your system.
 
 ## Usage
-TODO
+You can simply use the transformer class as a regular pytorch model. The only important difference is that you need to create an embedding of you input and output examples, for this you can always use existing language embedding functionalities from libraries like spaCy. Then you also need to pass through the vocabulary size and padding index to the model. I added an example with dummy data to the transformer.py file to show how.
+
+```python
+# Check if cuda is available as device    
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+logging.info(f"Running on {device}")    
+
+# Dummy input data
+source = torch.tensor([[1, 2, 3, 4, 5], [1, 2, 3, 0, 0], [1, 2, 0, 0, 0], [2, 3, 4, 5, 6]]).to(device)
+target = torch.tensor([[1, 2, 3, 4, 5], [1, 2, 3, 4, 0], [1, 2, 3, 4, 5], [1, 2, 3, 4, 5]]).to(device)
+
+# Dummy input sizes
+source_vocabulary_size = 10
+target_vocabulary_size = 10
+
+# Dummy padding indices
+source_padding_index = 0
+target_padding_index = 0
+
+# Initialize transformer model
+model = Transformer(source_vocabulary_size, target_vocabulary_size,
+      source_padding_index, target_padding_index, device=device).to(device)
+
+# Set model to training mode
+model.train()
+
+# Define loss function and optimizer
+loss_function = nn.CrossEntropyLoss()
+optimizer = torch.optim.Adam(model.parameters())
+
+# Training loop
+for epoch in range(5):
+    # Forward pass
+    logits = model(source, target)
+    loss = loss_function(logits.view(-1, target_vocabulary_size), target.view(-1))
+
+    # Backward pass
+    loss.backward()
+    optimizer.step()
+
+    # Zero out gradients
+    optimizer.zero_grad()
+
+    # Print loss at each epoch
+    logging.info(f'Epoch {epoch+1}: Loss = {loss.item()}')
+
+# Set model to eval mode
+model.eval()
+
+# Evaluation loop
+with torch.no_grad():
+    logits = model(source, target)
+    preds = logits.argmax(dim=-1)
+    accuracy = (preds == target).float().mean()
+    logging.info(f'Accuracy: {accuracy}')
+```
 
 ## Reading material
 Before you can implement, you have to of course read up on the technology itself. For starters I would really recommend you to read the following three papers at least:
