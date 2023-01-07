@@ -23,10 +23,10 @@ class MultiHeadAttention(nn.Module):
         # After the scaled dot-product attention the outputs of all the heads are concatenated and passed through a single linear layer.    
         self.unify_out = nn.Linear(self.embedding_size, self.embedding_size)
             
-    def forward(self, values, keys, query, mask):
+    def forward(self, values, keys, queries, mask):
         # Get dimensions of the input
         batch_size = values.shape[0]
-        nr_values, nr_keys, nr_queries = values.shape[1], keys.shape[1], query.shape[1]
+        nr_values, nr_keys, nr_queries = values.shape[1], keys.shape[1], queries.shape[1]
         
         # Pass V, K and Q through the linear layers 
         # In theory we need to have separate linear layers per head here
@@ -43,7 +43,7 @@ class MultiHeadAttention(nn.Module):
         # We now need to perform scaled dot-product attention
         # First the keys and queries need to be multiplied, we can use einsum for this
         # For more information on einsum I recommend the following video: https://www.youtube.com/watch?v=pkVwUVEHmfI
-        x = torch.einsum("bqhd,bkhd->nhqk", [queries, keys])
+        x = torch.einsum("bqhd,bkhd->bhqk", [queries, keys])
         
         # Optional masking
         if mask is not None:
@@ -57,7 +57,7 @@ class MultiHeadAttention(nn.Module):
         x = torch.einsum("bhql,blhd->bqhd", [x, values])
         
         # Next all the outputs of the heads need to be concatenated
-        x = x.view(batch_size, nr_queries, self.embedding_size)
+        x = x.reshape(batch_size, nr_queries, self.embedding_size)
         
         # And passed through the final linear layer
         return self.unify_out(x)
