@@ -27,7 +27,7 @@ This is the same as multi-head attention, with the addition of a mask. Why do we
 You can find the environment I'm using for this project in the environment.yml file. You can use this file with conda to recreate this exact environment, just make sure to update the environment prefix. The environment is based on python 3.10 (as 3.11 is not available in conda yet). In terms of libraries I'm currently only using pytorch with CUDA (11.7) and standard libraries like numpy. So an alternative option could be to recreate this environment yourself with python 3.10 and installing a version of pytorch that works on your system.
 
 ## Usage
-You can simply use the transformer class as a regular pytorch model. The only important difference is that you need to create an embedding of you input and output examples, for this you can always use existing language embedding functionalities from libraries like spaCy. Then you also need to pass through the vocabulary size and padding index to the model. I added an example with dummy data to the transformer.py file to show how.
+You can simply use the transformer class as a regular pytorch model. The only important difference is that you need to create an embedding of your input and output examples, for this you can always use existing language embedding functionalities from libraries like spaCy. You also need to pass through the vocabulary size and padding index to the model. I added an example with dummy data to the transformer.py file to show how.
 
 ```python
 # Check if cuda is available as device    
